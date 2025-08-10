@@ -2,6 +2,7 @@ import Foundation
 import Vision
 import CoreML
 import UIKit
+import CoreImage
 
 struct ClassificationCandidate: Codable, Identifiable {
     let id: String
@@ -19,23 +20,44 @@ struct ClassificationResult: Codable {
 final class MLService {
     enum MLServiceError: Error { case modelUnavailable, processingFailed }
 
+    private static let ciContext = CIContext(options: [.cacheIntermediates: false, .useSoftwareRenderer: false])
+
     private let visionModel: VNCoreMLModel?
     private let processingQueue = DispatchQueue(label: "com.leaflens.mlservice.queue")
+    private let stubDelay: TimeInterval
+    private let targetLongSide: CGFloat = 512
 
-    init(model: MLModel?) {
+    init(model: MLModel?, stubDelay: TimeInterval = 0.05) {
         if let model {
             self.visionModel = try? VNCoreMLModel(for: model)
         } else {
             self.visionModel = nil
         }
+        self.stubDelay = stubDelay
     }
 
     static func loadModel() -> MLModel? {
-        // Load compiled model from the app bundle (PlantClassifier.mlmodelc)
         guard let url = Bundle.main.url(forResource: "PlantClassifier", withExtension: "mlmodelc") else {
             return nil
         }
         return try? MLModel(contentsOf: url)
+    }
+
+    private func downscaleForModel(_ cgImage: CGImage) -> CGImage {
+        let width = CGFloat(cgImage.width)
+        let height = CGFloat(cgImage.height)
+        let longSide = max(width, height)
+        guard longSide > targetLongSide else { return cgImage }
+        let scale = targetLongSide / longSide
+        let ciImage = CIImage(cgImage: cgImage)
+        let filter = CIFilter.lanczosScaleTransform()
+        filter.inputImage = ciImage
+        filter.scale = Float(scale)
+        filter.aspectRatio = 1.0
+        guard let output = filter.outputImage else { return cgImage }
+        let rect = CGRect(x: 0, y: 0, width: width * scale, height: height * scale)
+        guard let scaledCG = MLService.ciContext.createCGImage(output, from: rect) else { return cgImage }
+        return scaledCG
     }
 
     // New API: classify CGImage and return top-3 candidates
@@ -58,15 +80,19 @@ final class MLService {
                 }
                 completion(.success(ClassificationResult(candidates: Array(top))))
             }
-            // Run on background to avoid blocking UI
+            // Run on background to avoid blocking UI, and downscale before inference
             Task.detached { [processingQueue] in
-                let handler = VNImageRequestHandler(cgImage: cgImage, options: [:])
-                processingQueue.async {
-                    do { try handler.perform([request]) } catch { completion(.failure(error)) }
+                autoreleasepool {
+                    let scaled = self.downscaleForModel(cgImage)
+                    let handler = VNImageRequestHandler(cgImage: scaled, options: [:])
+                    processingQueue.async {
+                        do { try handler.perform([request]) } catch { completion(.failure(error)) }
+                    }
+                    // scaled goes out of scope here
                 }
             }
         } else {
-            // Stub: return three deterministic examples
+            // Stub: return three deterministic examples fast
             let ids = ["oak", "maple", "birch"]
             let candidates: [ClassificationCandidate] = ids.enumerated().map { index, id in
                 let species = SpeciesDB.shared.speciesById[id]
@@ -78,7 +104,7 @@ final class MLService {
                     confidence: conf
                 )
             }
-            processingQueue.asyncAfter(deadline: .now() + 0.5) {
+            processingQueue.asyncAfter(deadline: .now() + stubDelay) {
                 completion(.success(ClassificationResult(candidates: candidates)))
             }
         }

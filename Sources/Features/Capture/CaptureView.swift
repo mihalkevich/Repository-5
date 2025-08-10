@@ -73,7 +73,8 @@ struct CaptureView: View {
             Task {
                 guard let data = try? await newItem?.loadTransferable(type: Data.self),
                       let uiImage = UIImage(data: data) else { return }
-                await MainActor.run { self.sourceUIImage = uiImage }
+                let preview = ImageUtils.downscaleForPreview(uiImage)
+                await MainActor.run { self.sourceUIImage = preview }
                 if let cg = uiImage.cgImage { self.handleCaptured(cgImage: cg) }
             }
         }

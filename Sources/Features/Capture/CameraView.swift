@@ -102,5 +102,7 @@ final class CameraViewController: UIViewController, AVCapturePhotoCaptureDelegat
         if let cgImage = photo.cgImageRepresentation()?.takeUnretainedValue() {
             onCapture?(cgImage)
         }
+        // release photo buffer ASAP
+        autoreleasepool { _ = () }
     }
 }
