@@ -25,6 +25,7 @@ targets:
       - sdk: CoreML.framework
       - sdk: AVFoundation.framework
       - sdk: Photos.framework
+      - sdk: PhotosUI.framework
     scheme:
       gatherCoverageData: true
 

@@ -6,4 +6,8 @@ public struct Species: Codable, Identifiable {
     public let commonName: String
     public let scientificName: String
     public let description: String
+    public let ruName: String?
+    public let habitat: String?
+    public let photoTips: String?
+    public let iconName: String?
 }

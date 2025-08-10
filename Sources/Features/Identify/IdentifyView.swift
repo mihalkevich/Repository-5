@@ -1,13 +1,13 @@
 import SwiftUI
+import UIKit
 import Vision
 import CoreML
 
 struct IdentifyView: View {
     var image: UIImage?
-    var onResult: (IdentificationResult) -> Void
 
     @State private var isRunning: Bool = false
-    @State private var result: IdentificationResult?
+    @State private var result: ClassificationResult?
     @State private var errorMessage: String?
 
     private let mlService = MLService(model: nil)
@@ -26,7 +26,7 @@ struct IdentifyView: View {
             if isRunning {
                 ProgressView("Identifying...")
             } else if let result {
-                ResultsView(result: result)
+                ResultsView(result: result, sourceImage: image)
             } else if let errorMessage {
                 Text(errorMessage)
                     .foregroundColor(.red)
@@ -47,18 +47,16 @@ struct IdentifyView: View {
     }
 
     private func runIdentification() {
-        guard let image else { return }
+        guard let image, let cg = image.cgImage else { return }
         isRunning = true
         errorMessage = nil
 
-        mlService.identify(image: image) { result in
+        mlService.classify(cgImage: cg) { result in
             DispatchQueue.main.async {
                 self.isRunning = false
                 switch result {
-                case .success(let identification):
-                    self.result = identification
-                    onResult(identification)
-                    StorageService.shared.appendToHistory(identification)
+                case .success(let classification):
+                    self.result = classification
                 case .failure(let error):
                     self.errorMessage = error.localizedDescription
                 }
@@ -68,5 +66,5 @@ struct IdentifyView: View {
 }
 
 #Preview {
-    IdentifyView(image: nil) { _ in }
+    IdentifyView(image: nil)
 }
