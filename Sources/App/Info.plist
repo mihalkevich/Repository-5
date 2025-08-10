@@ -37,5 +37,12 @@
     <string>LeafLens uses the camera to capture leaf photos for identification.</string>
     <key>NSPhotoLibraryAddUsageDescription</key>
     <string>LeafLens saves preview images to your photo library.</string>
+    <key>CFBundleLocalizations</key>
+    <array>
+        <string>en</string>
+        <string>ru</string>
+    </array>
+    <key>XSAppIconAssets</key>
+    <string>Sources/App/Assets.xcassets/AppIcon.appiconset</string>
 </dict>
 </plist>

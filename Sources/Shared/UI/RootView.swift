@@ -18,6 +18,14 @@ struct RootView: View {
             .tabItem {
                 Label("History", systemImage: "clock")
             }
+
+            NavigationView {
+                AboutView()
+                    .navigationTitle("About")
+            }
+            .tabItem {
+                Label("About", systemImage: "info.circle")
+            }
         }
     }
 }
