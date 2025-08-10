@@ -15,7 +15,7 @@ struct CaptureView: View {
 
     @State private var navigateToResults = false
 
-    private let mlService = MLService(model: nil)
+    private let mlService = MLService(model: MLService.loadModel())
 
     var body: some View {
         VStack(spacing: 16) {

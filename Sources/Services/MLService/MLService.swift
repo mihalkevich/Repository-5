@@ -30,6 +30,14 @@ final class MLService {
         }
     }
 
+    static func loadModel() -> MLModel? {
+        // Load compiled model from the app bundle (PlantClassifier.mlmodelc)
+        guard let url = Bundle.main.url(forResource: "PlantClassifier", withExtension: "mlmodelc") else {
+            return nil
+        }
+        return try? MLModel(contentsOf: url)
+    }
+
     // New API: classify CGImage and return top-3 candidates
     func classify(cgImage: CGImage, completion: @escaping (Result<ClassificationResult, Error>) -> Void) {
         if let visionModel {
@@ -50,9 +58,12 @@ final class MLService {
                 }
                 completion(.success(ClassificationResult(candidates: Array(top))))
             }
-            let handler = VNImageRequestHandler(cgImage: cgImage, options: [:])
-            processingQueue.async {
-                do { try handler.perform([request]) } catch { completion(.failure(error)) }
+            // Run on background to avoid blocking UI
+            Task.detached { [processingQueue] in
+                let handler = VNImageRequestHandler(cgImage: cgImage, options: [:])
+                processingQueue.async {
+                    do { try handler.perform([request]) } catch { completion(.failure(error)) }
+                }
             }
         } else {
             // Stub: return three deterministic examples

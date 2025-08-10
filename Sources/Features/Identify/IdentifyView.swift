@@ -10,7 +10,7 @@ struct IdentifyView: View {
     @State private var result: ClassificationResult?
     @State private var errorMessage: String?
 
-    private let mlService = MLService(model: nil)
+    private let mlService = MLService(model: MLService.loadModel())
 
     var body: some View {
         VStack(spacing: 16) {
