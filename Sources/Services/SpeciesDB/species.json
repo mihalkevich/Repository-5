@@ -1,0 +1,20 @@
+[
+  {
+    "speciesId": "oak",
+    "commonName": "Oak",
+    "scientificName": "Quercus robur",
+    "description": "Oaks are large trees with lobed leaves and produce acorns."
+  },
+  {
+    "speciesId": "maple",
+    "commonName": "Maple",
+    "scientificName": "Acer platanoides",
+    "description": "Maples often have palmate leaves and produce winged samaras."
+  },
+  {
+    "speciesId": "birch",
+    "commonName": "Birch",
+    "scientificName": "Betula pendula",
+    "description": "Birches are known for their white bark and triangular leaves."
+  }
+]

@@ -1,0 +1,38 @@
+name: LeafLens
+options:
+  bundleIdPrefix: com.example
+  deploymentTarget:
+    iOS: '16.0'
+
+packages: {}
+
+targets:
+  LeafLens:
+    type: application
+    platform: iOS
+    deploymentTarget: '16.0'
+    sources:
+      - path: Sources
+    resources:
+      - path: Sources/Services/SpeciesDB/species.json
+    info:
+      path: Sources/App/Info.plist
+    settings:
+      PRODUCT_BUNDLE_IDENTIFIER: com.example.LeafLens
+      SWIFT_VERSION: 5.9
+    dependencies:
+      - sdk: Vision.framework
+      - sdk: CoreML.framework
+      - sdk: AVFoundation.framework
+      - sdk: Photos.framework
+    scheme:
+      gatherCoverageData: true
+
+  LeafLensTests:
+    type: bundle.unit-test
+    platform: iOS
+    deploymentTarget: '16.0'
+    sources:
+      - path: Tests/LeafLensTests
+    dependencies:
+      - target: LeafLens
