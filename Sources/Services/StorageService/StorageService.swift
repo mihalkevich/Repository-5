@@ -68,6 +68,15 @@ final class StorageService {
         }
     }
 
+    func deleteFromHistory(id: UUID) {
+        var current = loadHistory()
+        guard let index = current.firstIndex(where: { $0.id == id }) else { return }
+        let item = current.remove(at: index)
+        // Remove file
+        try? fileManager.removeItem(at: item.thumbFileURL)
+        saveHistory(current)
+    }
+
     func saveFeedback(speciesId: String, positive: Bool) {
         struct Feedback: Codable { let date: Date; let speciesId: String; let positive: Bool }
         var list: [Feedback] = []

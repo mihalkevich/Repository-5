@@ -4,6 +4,7 @@ import UIKit
 struct ResultsView: View {
     let result: ClassificationResult?
     let sourceImage: UIImage?
+    var readOnly: Bool = false
 
     @State private var selectedCandidateId: String?
     @State private var savedMessage: String?
@@ -45,7 +46,7 @@ struct ResultsView: View {
                         .padding(.horizontal)
                     }
 
-                    if let best = result?.best {
+                    if !readOnly, let best = result?.best {
                         HStack(spacing: 12) {
                             Button("Похоже") {
                                 StorageService.shared.saveFeedback(speciesId: best.id, positive: true)
@@ -58,22 +59,22 @@ struct ResultsView: View {
                             .buttonStyle(.bordered)
                         }
                         .padding(.horizontal)
-                    }
 
-                    Button {
-                        guard let image = sourceImage else { return }
-                        let chosen = result?.best
-                        let id = chosen?.id ?? "unknown"
-                        let label = chosen?.commonName ?? id
-                        let conf = chosen?.confidence ?? 0
-                        if let identification = StorageService.shared.saveToHistory(image: image, label: label, confidence: conf) {
-                            savedMessage = "Сохранено: \(identification.bestLabel)"
+                        Button {
+                            guard let image = sourceImage else { return }
+                            let chosen = result?.best
+                            let id = chosen?.id ?? "unknown"
+                            let label = chosen?.commonName ?? id
+                            let conf = chosen?.confidence ?? 0
+                            if let identification = StorageService.shared.saveToHistory(image: image, label: label, confidence: conf) {
+                                savedMessage = "Сохранено: \(identification.bestLabel)"
+                            }
+                        } label: {
+                            Label("Сохранить в Историю", systemImage: "square.and.arrow.down")
                         }
-                    } label: {
-                        Label("Сохранить в Историю", systemImage: "square.and.arrow.down")
+                        .buttonStyle(.bordered)
+                        .padding(.horizontal)
                     }
-                    .buttonStyle(.bordered)
-                    .padding(.horizontal)
                 }
 
                 if let speciesId = result?.best?.id, let species = SpeciesDB.shared.speciesById[speciesId] {
