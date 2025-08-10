@@ -1,0 +1,3 @@
+/* Локализованный InfoPlist */
+"NSCameraUsageDescription" = "LeafLens использует камеру для съёмки листьев и их определения.";
+"NSPhotoLibraryAddUsageDescription" = "LeafLens сохраняет превью изображений в вашу фототеку.";

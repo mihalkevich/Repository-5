@@ -1,0 +1,32 @@
+[
+  {
+    "speciesId": "oak",
+    "commonName": "Oak",
+    "scientificName": "Quercus robur",
+    "description": "Oaks are large trees with lobed leaves and produce acorns.",
+    "ruName": "Дуб",
+    "habitat": "Леса умеренного пояса, парки, аллеи",
+    "photoTips": "Фотографируйте верхнюю и нижнюю стороны листа, контур долей",
+    "iconName": "leaf"
+  },
+  {
+    "speciesId": "maple",
+    "commonName": "Maple",
+    "scientificName": "Acer platanoides",
+    "description": "Maples often have palmate leaves and produce winged samaras.",
+    "ruName": "Клён",
+    "habitat": "Города, парки, смешанные леса",
+    "photoTips": "Снимите лист целиком и его черешок",
+    "iconName": "leaf.circle"
+  },
+  {
+    "speciesId": "birch",
+    "commonName": "Birch",
+    "scientificName": "Betula pendula",
+    "description": "Birches are known for their white bark and triangular leaves.",
+    "ruName": "Берёза",
+    "habitat": "Светлые леса и опушки",
+    "photoTips": "Добавьте фрагмент коры и форму зубчиков листа",
+    "iconName": "leaf.fill"
+  }
+]
